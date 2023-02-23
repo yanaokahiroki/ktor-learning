@@ -1,8 +1,10 @@
 package com.learning.routes
 
+import com.learning.models.Customer
 import com.learning.models.customerStorage
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
+import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.*
@@ -26,6 +28,12 @@ fun Route.customerRouting() {
         "No Customer found with $id", status = HttpStatusCode.NotFound
       )
       return@get call.respond(customer)
+    }
+    
+    post {
+      val customer = call.receive<Customer>()
+      customerStorage.add(customer)
+      return@post call.respond(customer)
     }
   }
 }
