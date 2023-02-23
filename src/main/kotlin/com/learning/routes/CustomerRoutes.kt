@@ -29,11 +29,23 @@ fun Route.customerRouting() {
       )
       return@get call.respond(customer)
     }
-    
+  
     post {
       val customer = call.receive<Customer>()
       customerStorage.add(customer)
       return@post call.respond(customer)
+    }
+  
+    delete("{id?}") {
+      val id = call.parameters["id"] ?: return@delete call.respondText(
+        "Missing ID",
+        status = HttpStatusCode.BadRequest
+      )
+    
+      if (customerStorage.removeIf { it.id == id }) {
+        return@delete call.respondText("Customer removed correctly", status = HttpStatusCode.OK)
+      }
+      return@delete call.respondText("No Customer with $id", status = HttpStatusCode.NotFound)
     }
   }
 }
